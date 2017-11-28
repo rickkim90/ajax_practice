@@ -67,7 +67,7 @@ class PostsController < ApplicationController
   end
   
   def create_comment
-    @c = @post.comments.create(body: params[:body]) #현재 post id함께 거기에 comments 함께 작성
+    @c = @post.comments.create(comment_params) #현재 post id함께 거기에 comments 함께 작성
   end
   
   def like_post
@@ -85,6 +85,10 @@ class PostsController < ApplicationController
   end
   
   private
+    def comment_params
+      params.require(:comment).permit(:body)
+    end
+    
     def is_login?
       unless user_signed_in?
         respond_to do |format|
