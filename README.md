@@ -263,5 +263,18 @@ like 버튼 누르면 색 변하고 dislike 버튼 누르면 다시 변하고 �
 
 
 
+중복되는 코드
 
+private 안에
 
+```ruby
+def is_login?
+  unless user_signed_in?
+    respond_to do |format|
+      format.js { render 'please_login.js.erb' }
+    end
+  end
+end
+```
+
+before_action :is_login?, only: [:create_comment, :like_post]
