@@ -155,7 +155,16 @@ if(confirm("로그인이 필요합니다.\n로그인 페이지로 이동하시�
 ```ruby
 <script>
   $(function() {
+    $('#like_button').on('click', function(e) {
+      e.preventDefault();
+      // console.log("Like Button Clicked");
+      $.ajax({
+        method: "POST",
+        url: "<%= like_to_post_path %>"
+      })
+    })
     var form = $('#comment');
+    $(document).on('submit')
     form.on('submit', function(e) { //parameter에 매개변수 event e 
       e.preventDefault(); //method 실행
       //console.log("haha"); form 클릭시 haha 출력, 이벤트 바인딩 완료
@@ -171,4 +180,88 @@ if(confirm("로그인이 필요합니다.\n로그인 페이지로 이동하시�
   })
 </script>
 ```
+
+
+
+$('css selector').on('eventName', function(){
+
+});
+
+
+
+$(document).on('eventName', 'css selector', fucntion(){
+
+})
+
+
+
+#### Q. 좋아요 버튼 + ajax 구현
+
+1. 좋아요 버튼을 누릅니다
+2. 버튼을 누른경우
+
+2-1. 기존에 좋아요를 이미 누른경우
+
+2-2. 기존에 좋아요를 누리지 않은경우
+
+3. 이미 누른경우네는 좋아요 삭제
+
+3-2. 기존에 누르지 않은 경우에는 좋아요 등록
+
+
+
+rails g model like user:references post:references
+
+post & user both references 
+
+= 둘 다 참조
+
+
+
+##### frozen 메소드
+
+ORM 객체 == DB Row
+
+Like.create => DB Row ++;
+
+Like.destroy => DB Row --;
+
+@post.destroy
+
+destroy 후에 memory상에만 존재하는데 @post => frozen? 메소드..
+
+
+
+posts_controller
+
+@result 변수안에 담아서 처리
+
+```ruby
+@result = current_user.likes.create(post_id: @post.id)
+  else
+@result = current_user.likes.find_by(post_id: @post.id).destroy
+  end
+ end
+@result = @result.frozen?
+```
+
+
+
+like_post.js.erb
+
+```ruby
+if(<%= @result %>){
+    $('#like_button').text("Like").addClass("btn-info").removeClass("btn-danger");
+}
+else {
+    $('#like_button').text("Dislike").addClass("btn-danger").removeClass("btn-info");
+}
+$('#like_count').text(<%= @post.likes.count%>);
+```
+
+like 버튼 누르면 색 변하고 dislike 버튼 누르면 다시 변하고 그 후 count
+
+
+
+
 
