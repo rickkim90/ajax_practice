@@ -69,6 +69,7 @@ class PostsController < ApplicationController
     end
     @c = @post.comments.create(body: params[:body]) #현재 post id함께 거기에 comments 함께 작성
   end
+end
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -80,4 +81,3 @@ class PostsController < ApplicationController
     def post_params
       params.require(:post).permit(:title, :contents)
     end
-end
