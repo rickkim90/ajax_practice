@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :set_post, only: [:show, :edit, :update, :destroy, :create_comment]
+  before_action :set_post, only: [:show, :edit, :update, :destroy, :create_comment, :like_post]
 
   # GET /posts
   # GET /posts.json
@@ -10,6 +10,7 @@ class PostsController < ApplicationController
   # GET /posts/1
   # GET /posts/1.json
   def show
+    @like = current_user.likes.find_by(post_id: @post.id).nil?
   end
 
   # GET /posts/new
@@ -69,8 +70,28 @@ class PostsController < ApplicationController
     end
     @c = @post.comments.create(body: params[:body]) #현재 post id함께 거기에 comments 함께 작성
   end
+  
+  def like_post
+    unless user_signed_in?
+      respond_to do |format|
+        format.js { render 'please_login.js.erb' }
+      end
+    else
+      if Like.where(user_id: current_user.id, post_id: @post.id).first.nil? #여러줄을 가정하고 찾아와 배열형태, 그중에 첫번째를 찾았는데 그게 빈것인지 확인. 버이있지 않으면 좋아요 누른상태
+      @result = current_user.likes.create(post_id: @post.id) #현재 유저가 좋아요 누른걸 생성, 그 글은 @post에 담겨있는 글
+      #  puts "좋아요 누름"
+      else
+      # 좋아요를 누른 상태에 대한 실행문
+      # 기존의 좋아요를 삭제
+      @result = current_user.likes.find_by(post_id: @post.id).destroy
+      # puts "좋아요 취소"
+      end
+    end
+    # puts "Like Post Success"
+    @result = @result.frozen?
+  end
 end
-
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_post
