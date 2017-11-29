@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       post '/like_post' => 'posts#like_post', as: 'like_to'
     end
     collection do
-      delete '/:comment_id/destroy_comment' => 'posts#destroy_comment', as: 'destroy_comment'
+      delete '/:comment_id/destroy_comment' => 'posts#destroy_comment', as: 'destroy_comment' #posts컨트롤러트
     end
   end
   # The priority is based upon order of creation: first created -> highest priority.

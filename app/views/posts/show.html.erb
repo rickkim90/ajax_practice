@@ -28,13 +28,14 @@
 <table class="table", id="comment_table">
   <thead>
     <tr>
-      <th>댓글</th>
+      <th class="text-center"width="90">댓글</th>
     </tr>
   </thead>
   <tbody>
     <% @post.comments.reverse.each do |p| %>
-    <tr>
+    <tr id="comment-<%= p.id %>">
       <td><%= p.body %></td>
+      <td><%= link_to "삭제", destroy_comment_posts_path(p.id), method: :delete, data: {confirm: "삭제하시겠습니까?"}, class: "btn btn-warning", remote: true %></td>
     </tr>
     <% end %>
   </tbody>

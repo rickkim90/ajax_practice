@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy, :create_comment, :like_post]
-  before_action :is_login?, only: [:create_comment, :like_post]
+  before_action :is_login?, only: [:create_comment, :like_post, :destroy_comment]
 
   # GET /posts
   # GET /posts.json
@@ -68,6 +68,10 @@ class PostsController < ApplicationController
   
   def create_comment
     @c = @post.comments.create(comment_params) #현재 post id함께 거기에 comments 함께 작성
+  end
+  
+  def destroy_comment
+    @c = Comment.find(params[:comment_id]).destroy
   end
   
   def like_post
