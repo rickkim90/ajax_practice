@@ -47,7 +47,7 @@ routes.rb => rake routes 통해 확인
 
 ```ruby
 member do
-  post '/create_comment' => 'posts#create_comment', as: 'create_comment_to' 
+  post '/create_comment' => 'posts#create_comment', as: 'create_comment_to'
   #create_comment액션으로
   end
 end
@@ -63,9 +63,9 @@ https://api.jquery.com/category/events/form-events/
 
 #### preventDefault()
 
-form에 작성버튼 클릭시 form 안에 내용이 
+form에 작성버튼 클릭시 form 안에 내용이
 
-/posts/1/create_comment이 
+/posts/1/create_comment이
 
 posts#create_comment
 
@@ -94,7 +94,7 @@ posts#create_comment
 
 
 
-#### ajax 
+#### ajax
 
 url, method, data입력 필요
 
@@ -165,7 +165,7 @@ if(confirm("로그인이 필요합니다.\n로그인 페이지로 이동하시�
     })
     var form = $('#comment');
     $(document).on('submit')
-    form.on('submit', function(e) { //parameter에 매개변수 event e 
+    form.on('submit', function(e) { //parameter에 매개변수 event e
       e.preventDefault(); //method 실행
       //console.log("haha"); form 클릭시 haha 출력, 이벤트 바인딩 완료
       var contents = $('#body').val(); // id = body에 value롤 가지고온다.
@@ -212,7 +212,7 @@ $(document).on('eventName', 'css selector', fucntion(){
 
 rails g model like user:references post:references
 
-post & user both references 
+post & user both references
 
 = 둘 다 참조
 
@@ -278,3 +278,139 @@ end
 ```
 
 before_action :is_login?, only: [:create_comment, :like_post]
+
+### 게시판 댓글 삭제 기능 ajax
+
+
+
+ member
+
++ /posts/:id/{내가 설정한 method} (:id직접 넣지 않고 prefix path)
+
+collection
+
++ /posts/{내가 설정한 url}
+
+
+
+##### posts_controller
+
+```ruby
+  def destroy_comment
+    @c = Comment.find_by(params[:comment_id]).destroy
+  end
+```
+
+```ruby
+before_action :is_login?, only: [:create_comment, :like_post, :destroy_comment]
+```
+
+
+
+destroy_comment.js.erb
+
+```ruby
+$('#comment-<%= @c.id %>').fadeOut().remove();
+```
+
+fadeOut().remove();
+
+= element까지 삭제
+
+html태그까지 삭제..
+
+
+
+show.erb
+
+삭제할 떄 id값 지정..
+
+```ruby
+<tr id="comment-<%= c.id %>">
+```
+
+
+
+#### Truncate
+
+index.erb
+
+contents 20자
+
+```ruby
+<td><%= truncate post.contents, length: 20 %></td>
+```
+
+
+
+#### Paginate
+
+index.erb
+
+```ruby
+<%= paginate @posts %>
+```
+
+
+
+#### Infinite Scroll
+
+data추가로 인해 1..25 다음 26출력..
+
+```ruby
+<script>
+  $(function() {
+    var page_scroll_index = 2;
+    $(document).on('scroll', function() {
+      if ($(window).scrollTop() >= $(document).height() - $(window).height()) {
+        $.ajax({
+          method: "GET",
+          url: "<%= scroll_posts_path%>",
+          data: {
+            page: page_scroll_index++
+          }
+        })
+      }
+    });
+  });
+</script>
+```
+
+
+
+###### static
+
+1. $(window).height(); = 지금 보고 있는 browser 창크기
+
+###### dynamic
+
+2. $(document).height(); = 맨 처음부터 끝까지의 높이
+3. $(window).scrollTop(); = 스크롤의 현재 위치
+
++ w.scrollTop() = d.height() - w.height()
+
+
+
+posts_controller.rb
+
+```ruby
+def page_scroll
+  @posts = Post.order("created_at DESC").page(params[:page])
+end
+```
+
+`` = multi line
+
+'' = one line
+
+
+
+post.rb
+
+한 페이지 글 40개 출력..
+
+need gem 'kaminari'
+
+```ruby
+paginates_per 40
+```
