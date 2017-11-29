@@ -30,13 +30,16 @@
 
 <script>
   $(function() {
-    var page_scroll_index = 1;
+    var page_scroll_index = 2;
     $(document).on('scroll', function() {
       //console.log("움직인다..");
       if ($(window).scrollTop() >= $(document).height() - $(window).height()) {
         $.ajax({
           method: "GET",
-          url: "<%= scroll_posts_path%>"
+          url: "<%= scroll_posts_path%>",
+          data: {
+            page: page_scroll_index++
+          }
         })
       }
     });
