@@ -5,7 +5,7 @@ class PostsController < ApplicationController
   # GET /posts
   # GET /posts.json
   def index
-    @posts = Post.all
+    @posts = Post.order("created_at").page(params[:page])
   end
 
   # GET /posts/1
@@ -65,15 +65,15 @@ class PostsController < ApplicationController
       format.json { head :no_content }
     end
   end
-  
+
   def create_comment
     @c = @post.comments.create(comment_params) #현재 post id함께 거기에 comments 함께 작성
   end
-  
+
   def destroy_comment
     @c = Comment.find(params[:comment_id]).destroy
   end
-  
+
   def like_post
     if Like.where(user_id: current_user.id, post_id: @post.id).first.nil? #여러줄을 가정하고 찾아와 배열형태, 그중에 첫번째를 찾았는데 그게 빈것인지 확인. 버이있지 않으면 좋아요 누른상태
       @result = current_user.likes.create(post_id: @post.id) #현재 유저가 좋아요 누른걸 생성, 그 글은 @post에 담겨있는 글
@@ -87,12 +87,16 @@ class PostsController < ApplicationController
     # puts "Like Post Success"
     @result = @result.frozen?
   end
-  
+
+  def page_scroll
+    @posts = Post.order("created_at").page(params[:page])
+  end
+
   private
     def comment_params
       params.require(:comment).permit(:body)
     end
-    
+
     def is_login?
       unless user_signed_in?
         respond_to do |format|

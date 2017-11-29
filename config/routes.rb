@@ -1,13 +1,14 @@
 Rails.application.routes.draw do
   root 'posts#index'
   devise_for :users
-  resources :posts do 
+  resources :posts do
     member do
       post '/create_comment' => 'posts#create_comment', as: 'create_comment_to' #create_comment액션으로
       post '/like_post' => 'posts#like_post', as: 'like_to'
     end
     collection do
-      delete '/:comment_id/destroy_comment' => 'posts#destroy_comment', as: 'destroy_comment' #posts컨트롤러트
+      delete '/:comment_id/destroy_comment' => 'posts#destroy_comment', as: 'destroy_comment' #posts컨트롤러
+      get '/page_scroll' => 'posts#page_scroll', as: 'scroll'
     end
   end
   # The priority is based upon order of creation: first created -> highest priority.
